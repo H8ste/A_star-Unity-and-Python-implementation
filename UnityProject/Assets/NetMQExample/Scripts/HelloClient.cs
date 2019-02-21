@@ -14,7 +14,8 @@ public class HelloClient : MonoBehaviour
         if (SendPack)
         {
             _helloRequester.Continue();
-        } else if (!SendPack)
+        }
+        else if (!SendPack)
         {
             _helloRequester.Pause();
         }

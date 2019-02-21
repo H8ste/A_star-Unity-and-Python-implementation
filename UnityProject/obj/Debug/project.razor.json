@@ -1,0 +1,14 @@
+{
+  "ProjectFilePath": "c:\\Users\\Nickl\\Documents\\AI-miniproject2019-Astar\\UnityProject\\Assembly-CSharp.csproj",
+  "TargetFramework": "v4.7.2",
+  "TagHelpers": [],
+  "Configuration": {
+    "ConfigurationName": "UnsupportedRazor",
+    "LanguageVersion": "1.0",
+    "Extensions": [
+      {
+        "ExtensionName": "UnsupportedRazorExtension"
+      }
+    ]
+  }
+}
