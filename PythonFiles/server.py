@@ -25,3 +25,9 @@ while True:
     #  In the real world usage, after you finish your work, send your output here
     socket.send(b"World")
 
+    # if message received contains: "ALL TILES":
+
+
+    # if message recieve contains: "PLAYER CLICKS":
+    
+
