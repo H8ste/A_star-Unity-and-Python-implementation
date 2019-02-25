@@ -66,8 +66,8 @@ public class ServerHandler : RunAbleThread
                                     // test.AppendEmptyFrame();
                                     // test.Append(";Sent to server");
                                     // client.SendMultipartMessage(test);
-                                    client.SendFrame("Sent from server succesfully Hello");
-                                    Debug.Log("Fuck OFFFFFFF");
+                                    client.SendFrame(_sendingString);
+                                    Debug.Log("Sent from Unity to Python succesfully");
                                 }
                                 break;
                             }

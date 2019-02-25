@@ -6,7 +6,7 @@ public class Gamecontroller : MonoBehaviour
 {
     Collider object_Collider;
     public GameObject tileRef;
-    private List<GameObject> allTiles = new List<GameObject>();
+    public List<GameObject> allTiles = new List<GameObject>();
 
     private ServerHandler _server;
 
@@ -31,6 +31,7 @@ public class Gamecontroller : MonoBehaviour
             {
                 allTiles.Add(Instantiate(tileRef, new Vector3(x, 0, z), Quaternion.identity));
                 allTiles[allTiles.Count - 1].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)Random.Range(0, 4);
+                allTiles[allTiles.Count - 1].GetComponent<TileScript>().CalculateTypeCost();
             }
         _server.Start();
         _server.Continue();
@@ -64,6 +65,7 @@ public class Gamecontroller : MonoBehaviour
         for (int i = 0; i < TileList.Count; i++)
         {
             string tempString = "" + TileList[i].GetComponent<TileScript>().tyleCost;
+            Debug.Log("What is this:? " + TileList[i].gameObject.GetComponent<TileScript>().tyleCost);
             if (i != TileList.Count-1)
             {
                 tempString = string.Concat(tempString,";");
@@ -77,6 +79,7 @@ public class Gamecontroller : MonoBehaviour
     {
         if (_server._state != ServerHandler.ServerState.Busy)
         {
+            Debug.Log("Message sent to server: " + msgToServer);
             _server._sendingString = msgToServer;
             SetServerState(newState);
             return true;

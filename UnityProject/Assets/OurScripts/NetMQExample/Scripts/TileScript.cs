@@ -20,9 +20,16 @@ public class TileScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Renderer rend = GetComponent<Renderer>();
+        ;
 
         // rend.material.shader = Shader.Find("_Color");
+
+
+    }
+
+    public void CalculateTypeCost()
+    {
+        Renderer rend = GetComponent<Renderer>();
         switch (tileType)
         {
             case ColorTypes.Grass:
@@ -51,9 +58,7 @@ public class TileScript : MonoBehaviour
                     tyleCost = 20; break;
                 }
         }
-
     }
-
     // Update is called once per frame
     void Update()
     {
