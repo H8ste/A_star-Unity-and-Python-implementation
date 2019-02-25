@@ -2,7 +2,6 @@
 using AsyncIO;
 using NetMQ;
 using NetMQ.Sockets;
-using UnityEngine;
 
 public class HelloClient : MonoBehaviour
 {
