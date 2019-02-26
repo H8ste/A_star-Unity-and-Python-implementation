@@ -104,5 +104,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b8e3f2b575636489b9b9ea51cb9d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Water: {fileID: 2100000, guid: f39c09d3f1aac7c4b90c8a69a0f6a268, type: 2}
+  Lava: {fileID: 2100000, guid: 1b82d8cceaa28414b97553c8023f77b7, type: 2}
+  Grass: {fileID: 2100000, guid: 7393a6327aef86c42b893fec9b625392, type: 2}
+  Selected: {fileID: 2100000, guid: 7cc04a941feb85b4dbd80ecabcb8d8c0, type: 2}
+  Gravel: {fileID: 2100000, guid: a2e680f5ca6fea04cb08667f221f8e99, type: 2}
+  Dirt: {fileID: 2100000, guid: 9386fb0c15cce7845b09329e6b9ebcdb, type: 2}
   tileType: 0
   tyleCost: 0

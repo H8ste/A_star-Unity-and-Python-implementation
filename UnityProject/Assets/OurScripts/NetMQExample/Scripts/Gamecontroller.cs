@@ -53,6 +53,11 @@ public class Gamecontroller : MonoBehaviour
         {
             int _chosenTile = GetPositionClicked();
             Debug.Log("Element: " + _chosenTile + ":   x = " + FindCoordByElement(_chosenTile).x + "    &    y = " + FindCoordByElement(_chosenTile).y);
+            
+            //TESTING
+            allTiles[_chosenTile].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)5;
+            allTiles[_chosenTile].GetComponent<TileScript>().CalculateTypeCost();
+
             //allTiles[_chosenTile].
             //send tile 
         }

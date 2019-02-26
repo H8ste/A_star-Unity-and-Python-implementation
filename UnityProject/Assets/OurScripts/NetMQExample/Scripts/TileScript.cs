@@ -11,8 +11,10 @@ public class TileScript : MonoBehaviour
         Dirt,
         Gravel,
         Lava,
-        Water
+        Water,
+        Selected
     }
+    public Material Water, Lava, Grass, Selected, Gravel, Dirt;
     public ColorTypes tileType = 0;
     public int tyleCost = 0;
 
@@ -26,7 +28,7 @@ public class TileScript : MonoBehaviour
 
 
     }
-
+    
     public void CalculateTypeCost()
     {
         Renderer rend = GetComponent<Renderer>();
@@ -34,28 +36,32 @@ public class TileScript : MonoBehaviour
         {
             case ColorTypes.Grass:
                 {
-                    rend.material.color = new Color(0f / 255f, 128f / 255f, 28f / 255f);
+                    rend.material = Grass;
                     tyleCost = 10; break;
                 }
             case ColorTypes.Dirt:
                 {
-                    rend.material.color = new Color(120f / 255f, 72f / 255f, 0f / 255f);
+                    rend.material = Dirt;
                     tyleCost = 5; break;
                 }
             case ColorTypes.Gravel:
                 {
-                    rend.material.color = new Color(86f / 255f, 82f / 255f, 87f / 255f);
+                    rend.material = Gravel;
                     tyleCost = 1; break;
                 }
             case ColorTypes.Lava:
                 {
-                    rend.material.color = new Color(81f / 255f, 6f / 255f, 13f / 255f);
+                    rend.material = Lava;
                     tyleCost = 10000; break;
                 }
             case ColorTypes.Water:
                 {
-                    rend.material.color = new Color(12f / 255f, 77f / 255f, 105f / 255f);
+                    rend.material = Water;
                     tyleCost = 20; break;
+                }
+            case ColorTypes.Selected:
+                {
+                    rend.material = Selected; break;
                 }
         }
     }
