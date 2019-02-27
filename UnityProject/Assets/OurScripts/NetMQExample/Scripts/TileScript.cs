@@ -4,7 +4,7 @@ using System.Collections;
 public class TileScript : MonoBehaviour
 {
     [HideInInspector]
-
+    
     public enum ColorTypes
     {
         Grass,
@@ -12,9 +12,10 @@ public class TileScript : MonoBehaviour
         Gravel,
         Lava,
         Water,
-        Selected
     }
     public Material Water, Lava, Grass, Selected, Gravel, Dirt;
+
+    public bool _Selected = false;
     public ColorTypes tileType = 0;
     public int tyleCost = 0;
 
@@ -59,15 +60,19 @@ public class TileScript : MonoBehaviour
                     rend.material = Water;
                     tyleCost = 20; break;
                 }
-            case ColorTypes.Selected:
-                {
-                    rend.material = Selected; break;
-                }
         }
     }
     // Update is called once per frame
     void Update()
     {
-
+        if (_Selected == true)
+        {
+            Renderer rend = GetComponent<Renderer>();
+            rend.material = Selected;
+        }
+        else
+        {
+            CalculateTypeCost();
+        }
     }
 }

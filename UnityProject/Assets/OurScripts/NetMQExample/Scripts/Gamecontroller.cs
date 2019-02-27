@@ -10,6 +10,8 @@ public class Gamecontroller : MonoBehaviour
 
     private ServerHandler _server;
 
+    private int _chosenTile;
+
 
     //Sending DATA to PYTHON <-> Receiving DATA from PYTHON
 
@@ -51,15 +53,15 @@ public class Gamecontroller : MonoBehaviour
         //If mouse button is clicked
         if (Input.GetButtonDown("Fire1"))
         {
-            int _chosenTile = GetPositionClicked();
-            Debug.Log("Element: " + _chosenTile + ":   x = " + FindCoordByElement(_chosenTile).x + "    &    y = " + FindCoordByElement(_chosenTile).y);
+            allTiles[_chosenTile].GetComponent<TileScript>()._Selected = false;
             
-            //TESTING
-            allTiles[_chosenTile].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)5;
-            allTiles[_chosenTile].GetComponent<TileScript>().CalculateTypeCost();
-
-            //allTiles[_chosenTile].
-            //send tile 
+            int checkValue = GetPositionClicked();
+            if (checkValue >=0 && checkValue <= 999){
+                 _chosenTile = checkValue;
+                Debug.Log("Element: " + _chosenTile + ":   x = " + FindCoordByElement(_chosenTile).x + "    &    y = " + FindCoordByElement(_chosenTile).y);
+                allTiles[_chosenTile].GetComponent<TileScript>()._Selected = true;
+            }
+        
         }
     }
 
