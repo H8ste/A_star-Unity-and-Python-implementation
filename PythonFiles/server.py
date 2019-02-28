@@ -7,11 +7,12 @@
 import time
 import zmq  # pylint: disable=import-error
 
-print("testing")
+print("Server starting...")
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 
+print("Server started");
 
 while True:
     #  Wait for next request from client
@@ -32,7 +33,7 @@ while True:
 
         #  Send reply back to client
         #  In the real world usage, after you finish your work, send your output here
-    socket.send(b"World")
+    socket.send(b"Hello Client!")
 
     # elif msgType[0] == 1:
     #     pass

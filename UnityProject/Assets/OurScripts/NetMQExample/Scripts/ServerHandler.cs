@@ -57,17 +57,18 @@ public class ServerHandler : RunAbleThread
                             }
                         case ServerState.SendingTILES:
                             {
-                                _state = ServerState.Default;
-                                if (_sendingString != null)
+                                _state = ServerState.Busy;
+                                if (_sendingString != null && _sendingString != "")
                                 {
-                                    // var test = new NetMQMessage(4);
-                                    // test.AppendEmptyFrame();
-                                    // test.Append(_sendingString);
-                                    // test.AppendEmptyFrame();
-                                    // test.Append(";Sent to server");
-                                    // client.SendMultipartMessage(test);
                                     client.SendFrame(_sendingString);
-                                    Debug.Log("Sent from Unity to Python succesfully");
+                                    Debug.Log("Message sent to python: " + _sendingString);
+                                    
+                                    string messRecieve= "";
+                                    messRecieve = client.ReceiveFrameString();
+                                    Debug.Log("Message recieved from python: " + messRecieve);
+                                    
+                                    _state = ServerState.Default;
+                                    _sendingString = "";
                                 }
                                 break;
                             }

@@ -4,30 +4,18 @@ using System.Collections.Generic;
 
 public class Gamecontroller : MonoBehaviour
 {
-    Collider object_Collider;
     public GameObject tileRef;
     public List<GameObject> allTiles = new List<GameObject>();
-
     private ServerHandler _server;
+    private int _preChosenTile = -1;
 
-    private int _chosenTile;
-
-
-    //Sending DATA to PYTHON <-> Receiving DATA from PYTHON
-
-
-    //Struct used to send only the server-required KNOWLEDGE
-    private struct tileSEND
-    {
-        public int x, y, tileCost;
-    }
-
-
+    // Start is called once when the component with Gamecontroller script attached is spawned
     void Start()
     {
+        // Instantiate the server used
         _server = new ServerHandler();
 
-
+        // Creates all the tiles in the game
         for (int z = 0; z < 25; z++)
             for (int x = 0; x < 40; x++)
             {
@@ -35,13 +23,18 @@ public class Gamecontroller : MonoBehaviour
                 allTiles[allTiles.Count - 1].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)Random.Range(0, 4);
                 allTiles[allTiles.Count - 1].GetComponent<TileScript>().CalculateTypeCost();
             }
-        _server.Start();
-        _server.Continue();
 
+        // Instantiates the thread the server will run on
+        _server.Start();
+        // Begins the run method of the server
+        _server.Continue();
+        
+        // Sends all the tiles created as a string, stringformat:     (SENDTYPE:ELM1;ELM2;ELM3.....)
+        // Returns either true or false based if it was succesful
         if(SendToServer(ServerHandler.ServerState.SendingTILES, SendAllTiles(allTiles))){
-            //Debug.Log("Sent tiles to server succesfully");
+            Debug.Log("Sent tiles to server succesfully");
         } else{
-            Debug.Log("Files were not sent to server, see error message");
+            Debug.Log("Files were not sent to server");
         }
     }
 
@@ -50,16 +43,20 @@ public class Gamecontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //If mouse button is clicked
+        // If mouse button is clicked
         if (Input.GetButtonDown("Fire1"))
         {
-            allTiles[_chosenTile].GetComponent<TileScript>()._Selected = false;
-            
-            int checkValue = GetPositionClicked();
-            if (checkValue >=0 && checkValue <= 999){
-                 _chosenTile = checkValue;
-                Debug.Log("Element: " + _chosenTile + ":   x = " + FindCoordByElement(_chosenTile).x + "    &    y = " + FindCoordByElement(_chosenTile).y);
-                allTiles[_chosenTile].GetComponent<TileScript>()._Selected = true;
+            // Get mouse postion and check if it is within the index of tiles and clickable
+            int _chosenTile = GetPositionClicked();
+            if (_chosenTile >=0 && _chosenTile <= 999 && allTiles[_chosenTile].GetComponent<TileScript>().tileType != TileScript.ColorTypes.Lava){
+                // If not first time to run: deSelect prechosen tile
+                if (_preChosenTile != -1)
+                {
+                 allTiles[_preChosenTile].GetComponent<TileScript>().deSelect();
+                }
+                // Selects clicked tile
+                allTiles[_chosenTile].GetComponent<TileScript>().Select();
+                _preChosenTile = _chosenTile;
             }
         
         }
@@ -68,11 +65,13 @@ public class Gamecontroller : MonoBehaviour
     /// <summary>Sends All tiles to python server. Contains: a cost for each tile in correct order</summary>
     string SendAllTiles(List<GameObject> TileList)
     {
+        // returnString describes the type of Data sent
+        // in this function, 0 is used due to:   0: "Send all tiles" ,  1: "Send selected tile"
         string returnString = "0:";
         for (int i = 0; i < TileList.Count; i++)
         {
             string tempString = "" + TileList[i].GetComponent<TileScript>().tyleCost;
-            Debug.Log("What is this:? " + TileList[i].gameObject.GetComponent<TileScript>().tyleCost);
+
             if (i != TileList.Count-1)
             {
                 tempString = string.Concat(tempString,";");
@@ -81,12 +80,11 @@ public class Gamecontroller : MonoBehaviour
         }
         return returnString;
     }
-
+    
     bool SendToServer(ServerHandler.ServerState newState, string msgToServer)
     {
         if (_server._state != ServerHandler.ServerState.Busy)
         {
-            Debug.Log("Message sent to server: " + msgToServer);
             _server._sendingString = msgToServer;
             SetServerState(newState);
             return true;

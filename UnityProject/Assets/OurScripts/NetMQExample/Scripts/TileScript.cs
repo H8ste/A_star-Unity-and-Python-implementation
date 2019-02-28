@@ -4,7 +4,8 @@ using System.Collections;
 public class TileScript : MonoBehaviour
 {
     [HideInInspector]
-    
+    Renderer _RendTexture;
+    Material preMaterial;
     public enum ColorTypes
     {
         Grass,
@@ -23,8 +24,8 @@ public class TileScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        ;
 
+        _RendTexture = GetComponent<Renderer>();
         // rend.material.shader = Shader.Find("_Color");
 
 
@@ -32,47 +33,55 @@ public class TileScript : MonoBehaviour
     
     public void CalculateTypeCost()
     {
-        Renderer rend = GetComponent<Renderer>();
+        _RendTexture = GetComponent<Renderer>();
         switch (tileType)
         {
             case ColorTypes.Grass:
                 {
-                    rend.material = Grass;
+                    _RendTexture.material = Grass;
                     tyleCost = 10; break;
                 }
             case ColorTypes.Dirt:
                 {
-                    rend.material = Dirt;
+                    _RendTexture.material = Dirt;
                     tyleCost = 5; break;
                 }
             case ColorTypes.Gravel:
                 {
-                    rend.material = Gravel;
+                    _RendTexture.material = Gravel;
                     tyleCost = 1; break;
                 }
             case ColorTypes.Lava:
                 {
-                    rend.material = Lava;
+                    _RendTexture.material = Lava;
                     tyleCost = 10000; break;
                 }
             case ColorTypes.Water:
                 {
-                    rend.material = Water;
+                    _RendTexture.material = Water;
                     tyleCost = 20; break;
                 }
         }
     }
+
+    public void Select()
+    {
+        _RendTexture = GetComponent<Renderer>();
+        preMaterial = _RendTexture.material;
+        _RendTexture.material = Selected;
+    }
+
+      public void deSelect()
+    {
+        //Only runs after select() has been run ones as to instantiate preMaterial
+        _RendTexture = GetComponent<Renderer>();
+        _RendTexture.material = preMaterial;
+    }
+
+
     // Update is called once per frame
     void Update()
     {
-        if (_Selected == true)
-        {
-            Renderer rend = GetComponent<Renderer>();
-            rend.material = Selected;
-        }
-        else
-        {
-            CalculateTypeCost();
-        }
+       
     }
 }
