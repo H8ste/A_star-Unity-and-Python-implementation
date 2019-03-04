@@ -24,6 +24,7 @@ public class TileScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        
 
         _RendTexture = GetComponent<Renderer>();
         // rend.material.shader = Shader.Find("_Color");

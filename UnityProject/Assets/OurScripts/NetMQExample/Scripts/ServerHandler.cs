@@ -77,25 +77,6 @@ public class ServerHandler : RunAbleThread
                                 break;
                             }
                     }
-                    // if (_state == ServerState.SendingTILES)
-                    // {
-
-                    // }
-                    // else if (_state)
-                    // {
-                    //     //string message = client.ReceiveFrameString();
-                    //     client.SendFrame("Hello");
-
-                    //     string message = null;
-                    //     bool gotMessage = false;
-
-                    //     while (Running)
-                    //     {
-                    //         gotMessage = client.TryReceiveFrameString(out message); // this returns true if it's successful
-                    //         if (gotMessage) break;
-                    //     }
-                    //     if (gotMessage) Debug.Log("Received " + message);
-                    // }
                 }
             }
         }
