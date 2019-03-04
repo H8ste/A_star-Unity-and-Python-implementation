@@ -12,7 +12,7 @@ context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 
-print("Server started");
+print("Server started")
 
 while True:
     #  Wait for next request from client
@@ -33,7 +33,19 @@ while True:
 
         #  Send reply back to client
         #  In the real world usage, after you finish your work, send your output here
+
+    elif (msgType[0] == "1"):
+        # Destination element ID
+        destination = msgType[1].split(",")[0]
+        # Array of agent positions
+        agentPositions = msgType[1].split(",")[1].split(";")
+
+        print("Printing target position:", destination)
+        print("Printing all the agents positions: ", agentPositions)
+    else:
+        print("Couldn't understand your request")
     socket.send(b"Hello Client!")
+
 
     # elif msgType[0] == 1:
     #     pass
@@ -41,3 +53,12 @@ while True:
     # if message received contains: "ALL TILES":
 
     # if message recieve contains: "PLAYER CLICKS":
+
+def FindElementByCoord(x,z):
+    return (z*40+x)
+
+def FindCoordByElement(element):
+    tempY =(element/40)
+    tempX =(element - (40*tempY))
+    return tempX,tempY
+

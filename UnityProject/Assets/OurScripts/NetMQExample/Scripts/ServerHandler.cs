@@ -22,7 +22,6 @@ public class ServerHandler : RunAbleThread
         Busy
     }
 
-    bool sendAllTiles = false;
     public ServerState _state = ServerState.Default;
 
     public string _sendingString = null;
@@ -53,6 +52,19 @@ public class ServerHandler : RunAbleThread
                             }
                         case ServerState.SendingCLICKPOS:
                             {
+                                _state = ServerState.Busy;
+                                if (_sendingString != null && _sendingString != "")
+                                {
+                                    client.SendFrame(_sendingString);
+                                    Debug.Log("Sent the click position and agents to python: " + _sendingString);
+                                    
+                                    string messRecieve= "";
+                                    messRecieve = client.ReceiveFrameString();
+                                    Debug.Log("Message recieved from python: " + messRecieve);
+                                    
+                                    _state = ServerState.Default;
+                                    _sendingString = "";
+                                }
                                 break;
                             }
                         case ServerState.SendingTILES:

@@ -31,14 +31,13 @@ public class Gamecontroller : MonoBehaviour
                 allTiles[allTiles.Count - 1].GetComponent<TileScript>().CalculateTypeCost();
             }
 
-        int[] agentPositions = new int[] { -1, -1, -1, -1, -1 };
+
         // Creates all the agents
+        int[] agentPositions = new int[] { -1, -1, -1, -1, -1 };
         for (int i = 0; i < agentCount; i++)
         {
-            if (agentPositions[i] = calculateNewAgentPosition(i))
-            {
-                allAgents.Add(Instantiate(agentRef, new Vector3(FindCoordByElement(agentPositions[i]).x, 0, FindCoordByElement(agentPositions[i]).y), Quaternion.identity));
-            }
+            agentPositions[i] = calculateNewAgentPosition(i, agentPositions);
+            allAgents.Add(Instantiate(agentRef, new Vector3(FindCoordByElement(agentPositions[i]).x, 0, FindCoordByElement(agentPositions[i]).y), Quaternion.identity));
         }
         // Instantiates the thread the server will run on
         _server.Start();
@@ -53,11 +52,13 @@ public class Gamecontroller : MonoBehaviour
         }
         else
         {
-            Debug.Log("Files were not sent to server");
+            Debug.Log("Tiles were not sent to server");
         }
     }
 
-    int calculateNewAgentPosition(int index)
+    // Checks if the postition of the agent has already been used, 
+    // if then it calculates a new position recursively
+    int calculateNewAgentPosition(int index, int[] agentPositions)
     {
         // Spawns them in random positions
         int tempXpos = UnityEngine.Random.Range(0, 40);
@@ -68,11 +69,11 @@ public class Gamecontroller : MonoBehaviour
         // If it has yet been used, it creates a new agent with calculated position
         while (Array.Exists<int>(agentPositions, element => element == calculatedElement))
         {
-            calcCulatedElement = calculateNewAgentPosition(index);
+            print("This position has already been taken, calculating a new position");
+            calculatedElement = calculateNewAgentPosition(index, agentPositions);
         }
-        if (agentPositions[index] != -1)
-            return calculatedElement
-        
+        print("Found new position");
+        return calculatedElement;
     }
 
     // Update is called once per frame
@@ -93,6 +94,18 @@ public class Gamecontroller : MonoBehaviour
                 // Selects clicked tile
                 allTiles[_chosenTile].GetComponent<TileScript>().Select();
                 _preChosenTile = _chosenTile;
+
+                // Sends all the tiles created as a string, stringformat:     (SENDTYPE:ELM1;ELM2;ELM3.....)
+                // Returns either true or false based if it was succesful
+                if (SendToServer(ServerHandler.ServerState.SendingCLICKPOS, SendSelectedTileAndAgentsPositions(_chosenTile, allAgents )))
+                {
+                    Debug.Log("Sent Selected tile and agents to server succesfully");
+                }
+                else
+                {
+                    Debug.Log("Selected tile and agents were not sent to server");
+                }
+
             }
 
         }
@@ -117,12 +130,31 @@ public class Gamecontroller : MonoBehaviour
         return returnString;
     }
 
-    string SendSelectedTile(int chosenTile)
+    string SendSelectedTileAndAgentsPositions(int chosenTile, List<GameObject> agents)
     {
+        int[] agentPosition = new int[5];
+        for (int i = 0; i < agentPosition.Length; i++)
+        {
+            Vector3 agentPos = agents[i].GetComponent<Transform>().position;
+            agentPosition[i] = FindElementByCoord(agentPos);
+        }
         // returnString describes the type of Data sent
         // in this function, 0 is used due to:   0: "Send all tiles" ,  1: "Send selected tile"
         string returnString = "1:";
-
+        // "1:chosenTile"
+        returnString = string.Concat(returnString, chosenTile.ToString());
+        // "1:chosenTile,"
+        returnString = string.Concat(returnString, ",");
+        // "1:chosenTile,0;1;2;3;4"
+        for (int i = 0; i < agentPosition.Length; i++)
+        {
+            string tempString = agentPosition[i].ToString();
+            if (i != agentPosition.Length - 1)
+            {
+                tempString = string.Concat(tempString, ";");
+            }
+            returnString = string.Concat(returnString, tempString);
+        }
         return returnString;
     }
 
