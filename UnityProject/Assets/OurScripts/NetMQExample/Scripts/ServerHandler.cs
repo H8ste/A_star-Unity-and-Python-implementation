@@ -60,7 +60,7 @@ public class ServerHandler : RunAbleThread
                                     
                                     string messRecieve= "";
                                     messRecieve = client.ReceiveFrameString();
-                                    Debug.Log("Message recieved from python: " + messRecieve);
+                                    Debug.Log("Recieved instructions from python: " + messRecieve);
                                     
                                     _state = ServerState.Default;
                                     _sendingString = "";
