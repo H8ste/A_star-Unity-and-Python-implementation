@@ -74,28 +74,24 @@ def findNeighbors(tile, allTiles):
 
 
 def Heuristic(posA, posB):
+    # returns distance between two given points
     return (math.sqrt((posB.x - posA.x)**2 + (posB.y - posA.y)**2))
 
 
 def findPathTaken(currPosition):
-    tempReturn = "1:"
-    tempPrint = currPosition
-    tempReturn += str(FindElementByCoord(tempPrint.x, tempPrint.y)) + ";"
-    print("X,Y: ", tempPrint.x, ",", tempPrint.y)
-    tempPrint = currPosition.previousTile
-    tempReturn += str(FindElementByCoord(tempPrint.x, tempPrint.y)) + ";"
-    while tempPrint.previousTile is not None:
-        print("X,Y: ", tempPrint.x, ",", tempPrint.y)
-        tempPrint = tempPrint.previousTile
-        tempReturn += str(FindElementByCoord(tempPrint.x, tempPrint.y)) + ";"
+    # tempReturn = "1:"
+    returnString = ""
+    currTile = currPosition
+    returnString += str(FindElementByCoord(currTile.x, currTile.y)) + ";"
+    # Iteravily goes through the tiles (backwards), appends this to returnString 
+    while currTile.previousTile is not None:
+        currTile = currTile.previousTile
+        returnString += str(FindElementByCoord(currTile.x, currTile.y)) + ";"
     #Removes last caracter
-    tempReturn = tempReturn[:-1]
-    return tempReturn
+    return returnString[:-1]
 
 
 # AgentPosition : Int,     EndGoal : Int,    tiles: Int[]    (COST)
-
-
 def FindRouteForAgent(AgentPosition, endGoal, tiles):
     allTiles = []
     for x in range(0, tiles.__len__()):
@@ -129,20 +125,21 @@ def FindRouteForAgent(AgentPosition, endGoal, tiles):
 
         # first time program is run, the currentTile element will be set to startposition
         currentPosition = openArray[lowestFElement]
-        # last checked node here
-
         print("Current position: ", currentPosition.x, ",", currentPosition.y)
+
         # check if the goal was found on the current Tile
         if currentPosition == endGoalPosition:
             print("GOAL HAS BEEN REACHED")
-            # FIND THE ROUTE TAKEN
+            # Find and return the path taken for this agent
             return findPathTaken(currentPosition)
         # Remove currentPosition from openArray and pushes it to closedArray
         openArray = removeElementFromArray(openArray, currentPosition)
         closedArray.append(currentPosition)
 
+        # Find the neighbors of currentPosition's tile
         neighborsArr = getNeighbors(currentPosition, allTiles)
 
+        # For each of these, find the best approach towards goal
         for x in range(0, neighborsArr.__len__()):
             currNeighbor = neighborsArr[x]
 
@@ -158,15 +155,18 @@ def FindRouteForAgent(AgentPosition, endGoal, tiles):
                 if currNeighbor not in openArray:
                     openArray.append(currNeighbor)
                 elif tempG >= currNeighbor.g:
-                    # no it is not a better path
+                    # it is not a better path.
+                    # continue trough the other neighbors (doesn't break for-loop)
                     continue
-                print("Continue ran")
+
+                # Better neighbor has been found
+                # Saves this neighbors findings' in its own tiles g,h, and f variables
                 currNeighbor.g = tempG
                 currNeighbor.h = Heuristic(currNeighbor, endGoalPosition)
 
                 currNeighbor.f = currNeighbor.g + currNeighbor.f
                 currNeighbor.previousTile = currentPosition
-                # previous
+        # currNeighbor is after the for loop, the best approach from currentPosition
     pass
 
 
@@ -177,30 +177,26 @@ socket.bind("tcp://*:5555")
 
 print("Server started")
 _allTiles = None
-while True:
 
-    #  Wait for next request from client
+# Python runs this while loop until it dies
+while True:
+    # Wait for next request from client
     message = socket.recv()
-    print("Recievede mes")
-    print(message)
-    print(",,,,")
+    # The first message sent from the server (UNITY) is all the tiles,
+    # some formatting is needed
     msgType = message.decode().split(':')
-    print(msgType)
+
+    # Instantiates the string that will be returned to UNITY
     sndMsg = ""
     sendType = 0
+    # If msgType is == to 0, it means that UNITY has sent all the tiles generated
     if (msgType[0] == "0"):
+        sendType = 0
+        # msgType[1].split(';') returns an 1D array that is saved in _allTiles
         _allTiles = msgType[1].split(';')
         print("Printing all tiles taken from server")
         print(_allTiles)
-        # socket.send(b"Hello Client!")
-
-        #  In the real world usage, you just need to replace time.sleep() with
-        #  whatever work you want python to do.
-        time.sleep(1)
-
-        #  Send reply back to client
-        #  In the real world usage, after you finish your work, send your output here
-
+    # If msgType is == 1, it means that UNITY has sent the destination and the agents' current positions
     elif (msgType[0] == "1"):
         sendType = 1
         # Destination element ID
@@ -210,21 +206,14 @@ while True:
 
         print("Printing target position:", destination)
         print("Printing all the agents positions: ", agentPositions)
-        sndMsg = FindRouteForAgent(int(agentPositions[0]), int(destination), _allTiles)
+        for item in agentPositions:
+            sndMsg += FindRouteForAgent(int(item), int(destination), _allTiles)
+            sndMsg += ':'
     else:
         print("Couldn't understand your request")
+
+    # Based on what data racieved, python will send something back to UNITY
     if sendType is 0:
         socket.send(b"Python recieved the tiles!")
     if sendType is 1:
-        socket.send_string(sndMsg)
-    
-    
-    
-    # FindRouteForAgent(0, 123, _allTiles)
-
-    # elif msgType[0] == 1:
-    #     pass
-
-    # if message received contains: "ALL TILES":
-
-    # if message recieve contains: "PLAYER CLICKS":
+        socket.send_string(sndMsg[:-1])

@@ -177,12 +177,12 @@ public class Gamecontroller : MonoBehaviour
         _server._state = newState;
     }
 
-    int FindElementByCoord(Vector3 pos)
+    public int FindElementByCoord(Vector3 pos)
     {
         return (((int)pos.z) * 40) + ((int)pos.x);
     }
 
-    Vector2 FindCoordByElement(int element)
+    public Vector2 FindCoordByElement(int element)
     {
         int tempY = (int)(element / 40);
         return new Vector2(element - (40 * tempY), tempY);
@@ -200,7 +200,6 @@ public class Gamecontroller : MonoBehaviour
         }
         //calculate element in array
         return FindElementByCoord(_MousePostion);
-
     }
 
     private void OnDestroy()
