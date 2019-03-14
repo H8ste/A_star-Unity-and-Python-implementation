@@ -169,7 +169,7 @@ def FindRouteForAgent(AgentPosition, endGoal, tiles):
         # currNeighbor is after the for loop, the best approach from currentPosition
     pass
 
-
+# This is the program's start of run-time
 print("Server starting...")
 context = zmq.Context()
 socket = context.socket(zmq.REP)
@@ -189,6 +189,7 @@ while True:
     # Instantiates the string that will be returned to UNITY
     sndMsg = ""
     sendType = 0
+    
     # If msgType is == to 0, it means that UNITY has sent all the tiles generated
     if (msgType[0] == "0"):
         sendType = 0

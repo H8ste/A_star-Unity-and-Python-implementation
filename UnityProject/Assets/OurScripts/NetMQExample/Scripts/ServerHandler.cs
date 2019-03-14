@@ -34,6 +34,8 @@ public class ServerHandler : RunAbleThread
 
     public string _sendingString = null;
 
+    public List<Vector2[]> allAgentsPath = new List<Vector2[]>();
+
     private Vector2[] pathStringToArray(string agentPath)
     {
         // Converts incoming string into array, then cast the string array to an int array using LINQ
@@ -82,27 +84,26 @@ public class ServerHandler : RunAbleThread
                                     string messRecieve = "";
                                     messRecieve = client.ReceiveFrameString();
                                     string[] tempPaths = messRecieve.Split(':');
-                                    List<Vector2[]> agentPaths = new List<Vector2[]>();
+                                    // Resets paths, as new ones haves been recieved from server
+                                    allAgentsPath.Clear();
                                     for (int i = 0; i < tempPaths.Length; i++)
                                     {
-                                        // Debug.Log("TEST: " + tempPaths[i]);
                                         Vector2[] temp2DVectorArr = pathStringToArray(tempPaths[i]);
-                                        agentPaths.Add(temp2DVectorArr);
+                                        allAgentsPath.Add(temp2DVectorArr);
                                     }
 
-                                    // Just for printing:
-                                    for (int i = 0; i < agentPaths.Count; i++)
+                                    // Just for printing within UNITY:
+                                    for (int i = 0; i < allAgentsPath.Count; i++)
                                     {
-                                        string debugString ="";
-                                        for (int k = agentPaths[i].Length - 1; k >= 0; k--)
+                                        string debugString = "";
+                                        for (int k = allAgentsPath[i].Length - 1; k >= 0; k--)
                                         {
-                                            debugString += "("+agentPaths[i][k].x + "," + agentPaths[i][k].y+")";
+                                            debugString += "(" + allAgentsPath[i][k].x + "," + allAgentsPath[i][k].y + ")";
                                             debugString += " : ";
-                                            
+
                                         }
-                                        Debug.Log("Agent " + (i+1) + " path:" + debugString);
+                                        Debug.Log("Agent " + (i + 1) + " path:" + debugString);
                                     }
-                      
                                     _state = ServerState.Default;
                                     _sendingString = "";
                                 }

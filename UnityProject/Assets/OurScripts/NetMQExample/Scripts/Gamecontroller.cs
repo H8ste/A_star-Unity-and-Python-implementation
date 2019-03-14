@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class Gamecontroller : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Gamecontroller : MonoBehaviour
     private int agentCount = 5;
     private ServerHandler _server;
     private int _preChosenTile = -1;
+    public float overallSpeed = 4f;
 
     // Start is called once when the component with Gamecontroller script attached is spawned
     void Start()
@@ -97,7 +99,7 @@ public class Gamecontroller : MonoBehaviour
 
                 // Sends all the tiles created as a string, stringformat:     (SENDTYPE:ELM1;ELM2;ELM3.....)
                 // Returns either true or false based if it was succesful
-                if (SendToServer(ServerHandler.ServerState.SendingCLICKPOS, SendSelectedTileAndAgentsPositions(_chosenTile, allAgents )))
+                if (SendToServer(ServerHandler.ServerState.SendingCLICKPOS, SendSelectedTileAndAgentsPositions(_chosenTile, allAgents)))
                 {
                     Debug.Log("Sent Selected tile and agents to server succesfully");
                 }
@@ -105,9 +107,68 @@ public class Gamecontroller : MonoBehaviour
                 {
                     Debug.Log("Selected tile and agents were not sent to server");
                 }
-
             }
+        }
 
+        // If the python has sent the paths for each agent to UNITY
+        if (_server.allAgentsPath.Count != 0)
+        {
+            // For each of these agent, walk its respective path
+            for (int i = 0; i < _server.allAgentsPath.Count; i++)
+            {
+                // If the agent has paths to take
+                if (_server.allAgentsPath[i].Length > 0)
+                {
+                    Vector3 current = allAgents[i].GetComponent<Transform>().position;
+                    int index = _server.allAgentsPath[i].Length - 1;
+                    Vector3 target = new Vector3(_server.allAgentsPath[i][index].x, 0, _server.allAgentsPath[i][index].y);
+
+                    // First check if agent has reached next position in its given path
+                    if (Vector3.Magnitude(target - current) < 0.05f)
+                    {
+                        // Removes the last element of the path (due to the agent already reaching this position)
+                        Vector2[] placeHolder = new Vector2[_server.allAgentsPath[i].Length - 1];
+                        for (int k = 0; k < placeHolder.Length; k++)
+                            placeHolder[k] = _server.allAgentsPath[i][k];
+
+                        _server.allAgentsPath[i] = placeHolder;
+                    }
+
+                    // Check again, after potentially removing an element above,
+                    // if agent has paths to take
+                    if (_server.allAgentsPath[i].Length > 0)
+                    {
+                        current = allAgents[i].GetComponent<Transform>().position;
+                        index = _server.allAgentsPath[i].Length - 1;
+                        target = new Vector3(_server.allAgentsPath[i][index].x, 0, _server.allAgentsPath[i][index].y);
+
+                        // Set speed of moving target to be based on the tile it's moving towards
+                        float speed = 0f;
+                        switch (allTiles[FindElementByCoord(target)].GetComponent<TileScript>().tileType)
+                        {
+                            case TileScript.ColorTypes.Dirt:
+                                speed = Time.deltaTime * (overallSpeed / 4.0f);
+                                break;
+                            case TileScript.ColorTypes.Grass:
+                                speed = Time.deltaTime * (overallSpeed / 8.0f);
+                                break;
+                            case TileScript.ColorTypes.Gravel:
+                                speed = Time.deltaTime * (overallSpeed / 1.0f);
+                                break;
+                            case TileScript.ColorTypes.Lava:
+                                speed = Time.deltaTime * (overallSpeed / 16.0f);
+                                break;
+                            case TileScript.ColorTypes.Water:
+                                speed = Time.deltaTime * (overallSpeed / 12.0f);
+                                break;
+                        }
+
+                        // Making the agent move towards the next position in its given path
+                        allAgents[i].GetComponent<Transform>().position = Vector3.MoveTowards(current, target, speed);
+                    }
+
+                }
+            }
         }
     }
 
