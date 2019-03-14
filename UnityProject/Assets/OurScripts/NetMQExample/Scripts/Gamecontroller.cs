@@ -28,7 +28,7 @@ public class Gamecontroller : MonoBehaviour
                 // Instantiates a prefab referenced within tileRef (SET IN INSPECTOR) -> Adds created object to allTiles List
                 allTiles.Add(Instantiate(tileRef, new Vector3(x, 0, z), Quaternion.identity));
                 // Randomly sets the tiletype of the created tile
-                allTiles[allTiles.Count - 1].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)UnityEngine.Random.Range(0, 4);
+                allTiles[allTiles.Count - 1].GetComponent<TileScript>().tileType = (TileScript.ColorTypes)UnityEngine.Random.Range(0, 5);
                 // Based on its own tiletype, a tyle cost is calculated for each element (tile)
                 allTiles[allTiles.Count - 1].GetComponent<TileScript>().CalculateTypeCost();
             }
@@ -123,16 +123,7 @@ public class Gamecontroller : MonoBehaviour
                     int index = _server.allAgentsPath[i].Length - 1;
                     Vector3 target = new Vector3(_server.allAgentsPath[i][index].x, 0, _server.allAgentsPath[i][index].y);
 
-                    // First check if agent has reached next position in its given path
-                    if (Vector3.Magnitude(target - current) < 0.05f)
-                    {
-                        // Removes the last element of the path (due to the agent already reaching this position)
-                        Vector2[] placeHolder = new Vector2[_server.allAgentsPath[i].Length - 1];
-                        for (int k = 0; k < placeHolder.Length; k++)
-                            placeHolder[k] = _server.allAgentsPath[i][k];
 
-                        _server.allAgentsPath[i] = placeHolder;
-                    }
 
                     // Check again, after potentially removing an element above,
                     // if agent has paths to take
@@ -165,6 +156,17 @@ public class Gamecontroller : MonoBehaviour
 
                         // Making the agent move towards the next position in its given path
                         allAgents[i].GetComponent<Transform>().position = Vector3.MoveTowards(current, target, speed);
+
+                        // First check if agent has reached next position in its given path
+                        if (Vector3.Magnitude(target - current) < 0.05f)
+                        {
+                            // Removes the last element of the path (due to the agent already reaching this position)
+                            Vector2[] placeHolder = new Vector2[_server.allAgentsPath[i].Length - 1];
+                            for (int k = 0; k < placeHolder.Length; k++)
+                                placeHolder[k] = _server.allAgentsPath[i][k];
+
+                            _server.allAgentsPath[i] = placeHolder;
+                        }
                     }
 
                 }

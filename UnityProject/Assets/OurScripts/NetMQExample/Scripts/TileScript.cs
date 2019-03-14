@@ -40,12 +40,12 @@ public class TileScript : MonoBehaviour
             case ColorTypes.Grass:
                 {
                     _RendTexture.material = Grass;
-                    tyleCost = 10; break;
+                    tyleCost = 8; break;
                 }
             case ColorTypes.Dirt:
                 {
                     _RendTexture.material = Dirt;
-                    tyleCost = 5; break;
+                    tyleCost = 4; break;
                 }
             case ColorTypes.Gravel:
                 {
@@ -55,12 +55,12 @@ public class TileScript : MonoBehaviour
             case ColorTypes.Lava:
                 {
                     _RendTexture.material = Lava;
-                    tyleCost = 10000; break;
+                    tyleCost = 18; break;
                 }
             case ColorTypes.Water:
                 {
                     _RendTexture.material = Water;
-                    tyleCost = 20; break;
+                    tyleCost = 12; break;
                 }
         }
     }
