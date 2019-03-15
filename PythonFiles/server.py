@@ -9,16 +9,6 @@ import zmq
 import math
 
 
-def FindElementByCoord(x, z):
-    return int(z*40+x)
-
-
-def FindCoordByElement(element):
-    tempY = int(element/40)
-    tempX = int(element - (40*tempY))
-    return tempX, tempY
-
-
 class tile():
     def __init__(self, x, y, cost):
         self.x = x
@@ -31,19 +21,25 @@ class tile():
         self.previousTile = None
 
 
+def FindElementByCoord(x, z):
+    return int(z*40+x)
+
+def FindCoordByElement(element):
+    tempY = int(element/40)
+    tempX = int(element - (40*tempY))
+    return tempX, tempY
+
 def removeElementFromArray(arr, elmt):
     for x in range(arr.__len__()-1, -1, -1):
         if arr[x] == elmt:
             arr.pop(x)
     return arr
 
-
 def getNeighbors(tile, allTiles):
     # If this position (tile) doesn't have neighbors defined
     if tile.neighbors is None:
         tile.neighbors = findNeighbors(tile, allTiles)
     return tile.neighbors
-
 
 def findNeighbors(tile, allTiles):
     tile.neighbors = []
@@ -90,14 +86,15 @@ def findPathTaken(currPosition):
     return returnString[:-1]
 
 
-# AgentPosition : Int,     EndGoal : Int,    tiles: Int[]    (COST)
+# AgentPosition:Int , EndGoal:Int , tiles:Int[]
 def FindRouteForAgent(AgentPosition, endGoal, tiles):
     # Defines a array containing tile objects representing the tiles
-    #   generated on the Unity-side with their respective Cost and placements
+    #   generated on the Unity-side with their 
+    #       respective Cost and placements
     allTiles = []
-    for x in range(0, tiles.__len__()):
-        tempX, tempY = FindCoordByElement(x)
-        allTiles.append(tile(tempX, tempY, tiles[x]))
+    for index in range(0, tiles.__len__()):
+        tempX, tempY = FindCoordByElement(index)
+        allTiles.append(tile(tempX, tempY, tiles[index]))
 
     # Sets the start position and end position based on input
     startPosition = allTiles[AgentPosition]
@@ -120,9 +117,6 @@ def FindRouteForAgent(AgentPosition, endGoal, tiles):
     while openArray.__len__() != 0:
         #find the lowest element in the openset
         lowestFElement = 0
-
-
-
         for index in range(0, openArray.__len__()):
             # If found element f is lower than previous found lowest
             # set lowest f Element to be equal to the new found element
@@ -206,7 +200,7 @@ while True:
     message = socket.recv()
 
     # The first message sent from the server (UNITY) is all the tiles,
-    # some formatting is needed
+    #   some formatting is needed
     msgType = message.decode().split(':')
 
     # Instantiates the string that will be returned to UNITY
@@ -227,7 +221,7 @@ while True:
         # Array of agent positions
         agentPositions = msgType[1].split(",")[1].split(";")
 
-        # For each recieved agent, computes the lowest cost path to the goal 
+        # For each received agent, computes the lowest cost path to the goal 
         # from its start position
         for agent in agentPositions:
             sndMsg += FindRouteForAgent(int(agent), int(goal), _allTiles)
