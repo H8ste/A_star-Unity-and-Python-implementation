@@ -158,7 +158,7 @@ public class Gamecontroller : MonoBehaviour
                         allAgents[i].GetComponent<Transform>().position = Vector3.MoveTowards(current, target, speed);
 
                         // First check if agent has reached next position in its given path
-                        if (Vector3.Magnitude(target - current) < 0.05f)
+                        if (Vector3.Magnitude(target - current) == 0)
                         {
                             // Removes the last element of the path (due to the agent already reaching this position)
                             Vector2[] placeHolder = new Vector2[_server.allAgentsPath[i].Length - 1];
